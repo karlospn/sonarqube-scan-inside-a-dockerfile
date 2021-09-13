@@ -10,7 +10,7 @@ ARG SONAR_PRJ_KEY
 
 ## Setting the Sonarqube Organization and Uri
 ENV SONAR_ORG "karlospn"
-Env SONAR_HOST "https://sonarcloud.io"
+ENV SONAR_HOST "https://sonarcloud.io"
 
 ## Install Java, because the sonarscanner needs it.
 RUN mkdir /usr/share/man/man1/
