@@ -1,8 +1,8 @@
-# Running sonarqube scanner when building a container image
+# Run a sonarqube scan when building a container image
 
 This repository contains a practical example about how to execute a sonarqube scan when building a container image.
 
-Here's how the end result looks like:
+Here's how the Dockerfile looks like:
 
 ```yaml
 #############
