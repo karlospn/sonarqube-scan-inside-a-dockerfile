@@ -1,6 +1,6 @@
-# Setting up a SonarQube scan when building a .NET Core container image
+# Setting up the SonarQube scanner when building a .NET Core container image
 
-This repository contains a practical example about how to execute a sonarqube scan when building a container image.
+This repository contains a practical example about how to execute the sonarqube scanner when building a container image.
 
 Here's how the Dockerfile looks like:
 
@@ -34,11 +34,11 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 
 ## Start scanner
 RUN dotnet sonarscanner begin \
-        /o:"$SONAR_ORG" \
-        /k:"$SONAR_PRJ_KEY" \
-        /d:sonar.host.url="$SONAR_HOST" \
-        /d:sonar.login="$SONAR_TOKEN" \ 
-        /d:sonar.coverageReportPaths="coverage/SonarQube.xml"
+	/o:"$SONAR_ORG" \
+	/k:"$SONAR_PRJ_KEY" \
+	/d:sonar.host.url="$SONAR_HOST" \
+	/d:sonar.login="$SONAR_TOKEN" \ 
+	/d:sonar.coverageReportPaths="coverage/SonarQube.xml"
 
 ## Copy the applications .csproj
 COPY /src/WebApp/*.csproj ./src/WebApp/
@@ -49,6 +49,9 @@ RUN dotnet restore "./src/WebApp/WebApp.csproj" -s "https://api.nuget.org/v3/ind
 ## Copy everything else
 COPY . ./
 
+## Build the app
+RUN dotnet build "./src/WebApp/WebApp.csproj" -c Release --no-restore
+
 ## Run dotnet test setting the output on the /coverage folder
 RUN dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --results-directory ./coverage
 
@@ -56,7 +59,7 @@ RUN dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --res
 RUN reportgenerator "-reports:./coverage/*/coverage.cobertura.xml" "-targetdir:coverage" "-reporttypes:SonarQube"
 
 ## Publish the app
-RUN dotnet publish src/WebApp/*.csproj -c Release -o /app/publish
+RUN dotnet publish src/WebApp/*.csproj -c Release -o /app/publish --no-build --no-restore
 
 ## Stop scanner
 RUN dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
