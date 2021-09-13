@@ -34,11 +34,11 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 
 ## Start scanner
 RUN dotnet sonarscanner begin \
-	/o:"$SONAR_ORG" \
-	/k:"$SONAR_PRJ_KEY" \
-	/d:sonar.host.url="$SONAR_HOST" \
-	/d:sonar.login="$SONAR_TOKEN" \ 
-	/d:sonar.coverageReportPaths="coverage/SonarQube.xml"
+        /o:"$SONAR_ORG" \
+        /k:"$SONAR_PRJ_KEY" \
+        /d:sonar.host.url="$SONAR_HOST" \
+        /d:sonar.login="$SONAR_TOKEN" \ 
+        /d:sonar.coverageReportPaths="coverage/SonarQube.xml"
 
 ## Copy the applications .csproj
 COPY /src/WebApp/*.csproj ./src/WebApp/
