@@ -1,4 +1,4 @@
-# Run a sonarqube scan when building a container image
+# Setting up a SonarQube scan when building a .NET Core container image
 
 This repository contains a practical example about how to execute a sonarqube scan when building a container image.
 
