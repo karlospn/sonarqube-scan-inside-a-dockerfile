@@ -42,6 +42,9 @@ RUN dotnet restore "./src/WebApp/WebApp.csproj" -s "https://api.nuget.org/v3/ind
 ## Copy everything else
 COPY . ./
 
+## Build the app
+RUN dotnet build "./src/WebApp/WebApp.csproj" -c Release --no-restore
+
 ## Run dotnet test setting the output on the /coverage folder
 RUN dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --results-directory ./coverage
 
@@ -49,7 +52,7 @@ RUN dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --res
 RUN reportgenerator "-reports:./coverage/*/coverage.cobertura.xml" "-targetdir:coverage" "-reporttypes:SonarQube"
 
 ## Publish the app
-RUN dotnet publish src/WebApp/*.csproj -c Release -o /app/publish
+RUN dotnet publish src/WebApp/*.csproj -c Release -o /app/publish --no-build --no-restore
 
 ## Stop scanner
 RUN dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
