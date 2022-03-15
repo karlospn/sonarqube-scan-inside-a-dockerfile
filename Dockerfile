@@ -4,14 +4,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build-env
 WORKDIR /app
 
-## Arguments for setting the Sonarqube Token and the Project Key
-ARG SONAR_TOKEN
-ARG SONAR_PRJ_KEY
-
-## Setting the Sonarqube Organization and Uri
-ENV SONAR_ORG "karlospn"
-ENV SONAR_HOST "https://sonarcloud.io"
-
 ## Install Java, because the sonarscanner needs it.
 RUN mkdir /usr/share/man/man1/
 RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y openjdk-11-jre
@@ -24,13 +16,13 @@ RUN dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8
 
 ## Set the dotnet tools folder in the PATH env variable
 ENV PATH="${PATH}:/root/.dotnet/tools"
-
+ARG sonarscan=yes
 ## Start scanner
-RUN dotnet sonarscanner begin \
-	/o:"$SONAR_ORG" \
-	/k:"$SONAR_PRJ_KEY" \
-	/d:sonar.host.url="$SONAR_HOST" \
-	/d:sonar.login="$SONAR_TOKEN" \ 
+RUN if [ "$sonarscan" = yes ] ; then \
+       dotnet sonarscanner begin \
+	/k:"testimplementation \
+	/d:sonar.host.url="http://3.109.121.132:9000/" \
+	/d:sonar.login="b4254a0e97265d862b24b657ad70a784062719a3" \ 
 	/d:sonar.coverageReportPaths="coverage/SonarQube.xml"
 
 ## Copy the applications .csproj
