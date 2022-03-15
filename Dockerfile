@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build-env
 WORKDIR /app
 
 ## Install Java, because the sonarscanner needs it.
-RUN mkdir /usr/share/man/man1/
+
 RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y openjdk-11-jre
 
 ## Install sonarscanner
