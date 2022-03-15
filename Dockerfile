@@ -23,10 +23,11 @@ RUN if [ "$sonarscan" = yes ] ; then \
 	/k:"testimplementation \
 	/d:sonar.host.url="http://3.109.121.132:9000/" \
 	/d:sonar.login="b4254a0e97265d862b24b657ad70a784062719a3" \ 
-	/d:sonar.coverageReportPaths="coverage/SonarQube.xml"
+	/d:sonar.coverageReportPaths="coverage/SonarQube.xml" \
       && dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --results-directory ./coverage \
       && reportgenerator "-reports:./coverage/*/coverage.cobertura.xml" "-targetdir:coverage" "-reporttypes:SonarQube" \
-      && dotnet sonarscanner end /d:sonar.login="b4254a0e97265d862b24b657ad70a784062719a3"
+      && dotnet sonarscanner end /d:sonar.login="b4254a0e97265d862b24b657ad70a784062719a3"; \
+      fi
 ## Copy the applications .csproj
 COPY /src/WebApp/*.csproj ./src/WebApp/
 
