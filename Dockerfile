@@ -18,7 +18,7 @@ RUN dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8
 ENV PATH="${PATH}:/root/.dotnet/tools"
 ARG sonarscan=yes
 ## Start scanner
-RUN if [ "$sonarscan" = yes ] ; then \
+RUN if [ "$sonarscan" = "yes" ] ; then \
        dotnet sonarscanner begin \
 	/k:"testimplementation \
 	/d:sonar.host.url="http://3.109.121.132:9000/" \
