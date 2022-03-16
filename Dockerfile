@@ -6,16 +6,16 @@ WORKDIR /app
 
 ## Install Java, because the sonarscanner needs it.
 
-RUN apt-get update && apt-get install -y openjdk-11-jre
+## RUN apt-get update && apt-get install -y openjdk-11-jre
 
 ## Install sonarscanner
-RUN dotnet tool install --global dotnet-sonarscanner --version 5.3.1
+## RUN dotnet tool install --global dotnet-sonarscanner --version 5.3.1
 
 ## Install report generator
-RUN dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.12
+## RUN dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.12
 
 ## Set the dotnet tools folder in the PATH env variable
-ENV PATH="${PATH}:/root/.dotnet/tools"
+## ENV PATH="${PATH}:/root/.dotnet/tools"
 ## Copy the applications .csproj
 COPY /src/WebApp/*.csproj ./src/WebApp/
 
@@ -30,7 +30,9 @@ RUN dotnet build "./src/WebApp/WebApp.csproj" -c Release --no-restore
 ARG sonarscan=no
 ## Start scanner
 RUN if [ "$sonarscan" = "yes" ] ; then \
-       dotnet sonarscanner begin \
+     dotnet tool install --global dotnet-sonarscanner --version 5.3.1 && dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.12 \
+     && export PATH="${PATH}:/root/.dotnet/tools" \
+     &&  dotnet sonarscanner begin \ 
 	/k:"testimplementation" \
 	/d:sonar.host.url="http://3.109.121.132:9000/" \
 	/d:sonar.login="b4254a0e97265d862b24b657ad70a784062719a3" \ 
