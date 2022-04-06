@@ -40,8 +40,11 @@ RUN if [ "$sonarscan" = "yes" ] ; then \
 	/d:sonar.coverageReportPaths="coverage/SonarQube.xml" \
       && dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --results-directory ./coverage \
       && reportgenerator "-reports:./coverage/*/coverage.cobertura.xml" "-targetdir:coverage" "-reporttypes:SonarQube" \
-      && curl --request POST  --url 'https://api.bitbucket.org/2.0/repositories/nagarjunareddy398/testprrepomb/pullrequests/1/comments' --header 'Content-Type: application/json' -u nagarjunareddy398:FFbQLkTgR5rXQqAwnFxG -d '{"content": { "raw": " sample comment" }}' \
+      && touch test.txt \
+      && cp test.txt ./ \
+      && curl --request POST  --url 'https://api.bitbucket.org/2.0/repositories/nagarjunareddy398/testprrepomb/pullrequests/1/comments' --header 'Content-Type: application/json' -u nagarjunareddy398:FFbQLkTgR5rXQqAwnFxG -d '{"content": { "raw": " sample comment" }}' \  
       && dotnet sonarscanner end ; \
+      
       fi
 
 ## Publish the app
