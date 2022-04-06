@@ -40,7 +40,7 @@ RUN if [ "$sonarscan" = "yes" ] ; then \
 	/d:sonar.coverageReportPaths="coverage/SonarQube.xml" \
       && dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --results-directory ./coverage \
       && reportgenerator "-reports:./coverage/*/coverage.cobertura.xml" "-targetdir:coverage" "-reporttypes:SonarQube" \
-      && curl -k --request POST  --url 'http://api.bitbucket.org/2.0/repositories/nagarjunareddy398/sonarqube-scan-inside-a-dockerfile/pullrequests/1/comments' --header 'Content-Type: application/json' -u nagarjunareddy398:z7h9CWrddVfsLyYTwubH -d '{"content": { "raw": "updated sample comment" }}' \
+      && curl -k --request POST  --url 'https://api.bitbucket.org/2.0/repositories/nagarjunareddy398/sonarqube-scan-inside-a-dockerfile/pullrequests/1/comments' --header 'Content-Type: application/json' -u nagarjunareddy398:curl --request POST  --url 'http://api.bitbucket.org/2.0/repositories/nagarjunareddy398/sonarqube-scan-inside-a-dockerfile/pullrequests/2/comments' --header 'Content-Type: application/json' -u nagarjunareddy398:FFbQLkTgR5rXQqAwnFxG -d '{"content": { "raw": " sample comment" }}' -d '{"content": { "raw": "updated sample comment" }}' \
       && dotnet sonarscanner end ; \
       fi
 
