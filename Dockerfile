@@ -4,35 +4,19 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build-env
 WORKDIR /app
 
-## Arguments for setting the Sonarqube Token and the Project Key
-ARG SONAR_TOKEN
-ARG SONAR_PRJ_KEY
-
-## Setting the Sonarqube Organization and Uri
-ENV SONAR_ORG "karlospn"
-ENV SONAR_HOST "https://sonarcloud.io"
-
 ## Install Java, because the sonarscanner needs it.
-RUN mkdir /usr/share/man/man1/
-RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y openjdk-11-jre
+##RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y openjdk-11-jre
+
+## RUN apt-get update && apt-get install -y openjdk-11-jdk
 
 ## Install sonarscanner
-RUN dotnet tool install --global dotnet-sonarscanner --version 5.3.1
+## RUN dotnet tool install --global dotnet-sonarscanner --version 5.3.1
 
 ## Install report generator
-RUN dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.12
+## RUN dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.12
 
 ## Set the dotnet tools folder in the PATH env variable
-ENV PATH="${PATH}:/root/.dotnet/tools"
-
-## Start scanner
-RUN dotnet sonarscanner begin \
-	/o:"$SONAR_ORG" \
-	/k:"$SONAR_PRJ_KEY" \
-	/d:sonar.host.url="$SONAR_HOST" \
-	/d:sonar.login="$SONAR_TOKEN" \ 
-	/d:sonar.coverageReportPaths="coverage/SonarQube.xml"
-
+## ENV PATH="${PATH}:/root/.dotnet/tools"
 ## Copy the applications .csproj
 COPY /src/WebApp/*.csproj ./src/WebApp/
 
@@ -44,18 +28,25 @@ COPY . ./
 
 ## Build the app
 RUN dotnet build "./src/WebApp/WebApp.csproj" -c Release --no-restore
-
-## Run dotnet test setting the output on the /coverage folder
-RUN dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --results-directory ./coverage
-
-## Create the code coverage file in sonarqube format using the cobertura file generated from the dotnet test command
-RUN reportgenerator "-reports:./coverage/*/coverage.cobertura.xml" "-targetdir:coverage" "-reporttypes:SonarQube"
+ARG sonarscan=no
+## Start scanner
+RUN if [ "$sonarscan" = "yes" ] ; then \
+      apt-get update && apt-get install -y openjdk-11-jdk \
+     && dotnet tool install --global dotnet-sonarscanner --version 5.3.1 && dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.12 \
+     && export PATH="${PATH}:/root/.dotnet/tools" \
+     &&  dotnet sonarscanner begin \ 
+	/k:"testimplementation" \
+	/d:sonar.host.url="http://3.109.121.132:9000/" \
+	/d:sonar.coverageReportPaths="coverage/SonarQube.xml" \
+      && dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --results-directory ./coverage \
+      && reportgenerator "-reports:./coverage/*/coverage.cobertura.xml" "-targetdir:coverage" "-reporttypes:SonarQube" \
+      && curl --insecure  --request POST  --url 'https://api.bitbucket.org/2.0/repositories/nagarjunareddy398/testprrepomb/pullrequests/1/comments' --header 'Content-Type: application/json' -u nagarjunareddy398:FFbQLkTgR5rXQqAwnFxG -d '{"content": { "raw": " sample comment" }}' \  
+      && dotnet sonarscanner end ; \
+      
+      fi
 
 ## Publish the app
 RUN dotnet publish src/WebApp/*.csproj -c Release -o /app/publish --no-build --no-restore
-
-## Stop scanner
-RUN dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
 #############
 ## Stage 2 ##
